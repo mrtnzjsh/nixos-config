@@ -1,0 +1,8 @@
+keys:
+  - &nixtop age1qg2xu2fhr2jn9mtxah5x5v9laj9lexc555lvqh22tw04d9plw3qs4l74gz
+
+creation_rules:
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *nixtop
