@@ -8,13 +8,21 @@
     shellAliases = {
       update = "pushd ~/nixos-config/ >/dev/null && git add -A && sudo nixos-rebuild switch --flake $HOME/nixos-config#$(hostname) && popd >/dev/null";
       nix-check = "nix flake check ~/nixos-config";
-      g = "git";
       v = "nvim";
       conf = "cd $HOME/nixos-config/ && nvim .";
       ls = "eza --icons";
       ll = "eza -l --icons";
       cat = "bat";
       pbcopy = "wl-copy";
+
+      # git
+      g = "git";
+      gs = "g status";
+      ga = "g add";
+      gc = "g commit";
+      gcm = "gc -m";
+      gco = "g checkout";
+      gpr = "git pull --rebase";
     };
 
     history = {
@@ -51,6 +59,6 @@
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
-    options = [ "--cmd cd" ];
+    options = ["--cmd cd"];
   };
 }
