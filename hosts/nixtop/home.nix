@@ -1,7 +1,6 @@
 {
   pkgs,
   inputs,
-  config,
   ...
 }: {
   imports = [
@@ -59,3 +58,4 @@
     doomDir = ../../modules/doom-config;
   };
 }
+

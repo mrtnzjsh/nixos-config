@@ -100,6 +100,7 @@
   services.system76-scheduler.enable = true;
   services.thermald.enable = true;
   services.upower.enable = true;
+  services.hardware.bolt.enable = true;
 
   # Fingerprint
   services.fprintd.enable = true;
@@ -111,6 +112,8 @@
   services.udev.extraRules = ''
     # Disable autosuspend for Synaptics fingerprint sensor
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="06cb", ATTR{idProduct}=="00f9", ATTR{power/control}="on"
+    # Disable USB autosuspend for all devices to fix dock issues
+    ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="on"
   '';
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
