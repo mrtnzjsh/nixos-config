@@ -7,8 +7,10 @@
   imports = [inputs.sops-nix.homeManagerModules.sops];
 
   sops = {
-    secrets."local_ai_url" = {};
-    secrets."local_ai_api_key" = {};
+    secrets."self_hosted/litellm_url" = {};
+    secrets."self_hosted/api_key" = {};
+    secrets."cloudflare/litellm_client_id" = {};
+    secrets."cloudflare/litellm_client_secret" = {};
 
     templates."opencode-config.json" = {
       path = "${config.home.homeDirectory}/.config/opencode/opencode.jsonc";
@@ -36,9 +38,13 @@
               "npm": "@ai-sdk/openai-compatible",
               "name": "LiteLLM",
               "options": {
-                "apiKey": "${config.sops.placeholder.local_ai_api_key}",
-                "baseURL": "${config.sops.placeholder.local_ai_url}",
-                "stream": false
+                "apiKey": "${config.sops.placeholder."self_hosted/api_key"}",
+                "baseURL": "${config.sops.placeholder."self_hosted/litellm_url"}",
+                "headers": {
+                  "CF-Access-Client-Id": "${config.sops.placeholder."cloudflare/litellm_client_id"}",
+                  "CF-Access-Client-Secret": "${config.sops.placeholder."cloudflare/litellm_client_secret"}"
+                },
+                "stream": false,
               },
               "models": {
                 "glm-47-flash": {

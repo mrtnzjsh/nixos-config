@@ -3,6 +3,10 @@
   lib,
   ...
 }: {
+  imports = [
+    ./nvf-keymaps.nix
+  ];
+
   programs.nvf = {
     enable = true;
 
@@ -36,11 +40,12 @@
             enable = true;
             register = {
               "<leader>d" = "+delete";
-              "<leader>e" = "+FileBrowser";
+              "<leader>e" = "+Pickers/Explorer";
+              "<leader>f" = "+find";
               "<leader>g" = "+Git";
               "<leader>l" = "+lsp";
               "<leader>m" = "+modify";
-              "<leader>s" = "+Window";
+              "<leader>w" = "+Window";
               "<leader>u" = "+ui";
             };
           };
@@ -56,112 +61,6 @@
           lazygit
         ];
 
-        keymaps = [
-          {
-            action = "<C-w>h";
-            key = "<C-h>";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<C-w>j";
-            key = "<C-j>";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<C-w>k";
-            key = "<C-k>";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<C-w>l";
-            key = "<C-l>";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = ":nohl<CR>";
-            key = "<leader>nh";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<C-w>=";
-            key = "<leader>se";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = ":split<CR>";
-            key = "<leader>sh";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = ":vsplit<CR>";
-            key = "<leader>sv";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<C-w>c";
-            key = "<leader>sx";
-            mode = "n";
-            noremap = true;
-            silent = true;
-          }
-          {
-            action = "<cmd>lua Snacks.explorer.open()<CR>";
-            key = "<leader>ee";
-            mode = "n";
-            noremap = true;
-            silent = true;
-            desc = "Open explorer [Snacks]";
-          }
-          {
-            action = "<cmd>lua Snacks.dim.enable()<CR>";
-            key = "<leader>ud";
-            mode = "n";
-            noremap = true;
-            silent = true;
-            desc = "Dim scope";
-          }
-          {
-            action = "<cmd>lua Snacks.dim.disable()<CR>";
-            key = "<leader>uD";
-            mode = "n";
-            noremap = true;
-            silent = true;
-            desc = "Undim scope";
-          }
-          {
-            action = "<cmd>lua Snacks.lazygit()<CR>";
-            key = "<leader>gg";
-            mode = "n";
-            noremap = true;
-            silent = true;
-            desc = "Open Lazygit";
-          }
-          {
-            action = "<cmd>lua Snacks.git.blame_line()<CR>";
-            key = "<leader>gb";
-            mode = "n";
-            noremap = true;
-            silent = true;
-            desc = "Git blame";
-          }
-        ];
-
         languages = {
           enableFormat = true;
           enableTreesitter = true;
@@ -170,6 +69,11 @@
           rust.enable = true;
           ts.enable = true;
           yaml.enable = true;
+
+          markdown = {
+            enable = true;
+            extensions.render-markdown-nvim.enable = true;
+          };
 
           nix = {
             enable = true;
@@ -201,6 +105,7 @@
         options = {
           autoindent = true;
           backspace = "indent,eol,start";
+          clipboard = "unnamedplus";
           cursorline = true;
           expandtab = true;
           ignorecase = true;
@@ -297,25 +202,14 @@
               dim.enable = true;
               explorer.enable = true;
               notifier.enable = true;
-              # lazygit.enable = true;
+              scope.enable = true;
+              indent.enable = true;
             };
           };
         };
 
         viAlias = true;
         vimAlias = true;
-
-        visuals = {
-          indent-blankline = {
-            enable = true;
-            # This enables the "rainbow" effect for different indent levels
-            setupOpts = {
-              scope = {
-                enabled = true;
-              };
-            };
-          };
-        };
       };
     };
   };

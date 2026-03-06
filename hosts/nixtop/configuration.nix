@@ -26,12 +26,16 @@
     options iwlmvm power_scheme=1
     # Disables TX aggregation to reduce peak power spikes
     options iwlwifi 11n_disable=8
+    # Disable 5GHz bands (AC/AX/BE) to reduce interference and power spikes
+    options iwlwifi disable_11ac=1
+    options iwlwifi disable_11ax=1
+    options iwlwifi disable_11be=1
   '';
   networking.localCommands = ''
     ${pkgs.iw}/bin/iw reg set US
     # Set the Transmit Power limit to 10 dBm (1000 mBm)
     # Lowering further from previous (ineffective) 15 dBm to reduce power contention.
-    ${pkgs.iw}/bin/iw dev wlp9s0f0 set txpower limit 250
+    ${pkgs.iw}/bin/iw dev wlp9s0f0 set txpower limit 50
   '';
 
   # Intel Graphics fix (often needed alongside the WiFi fix)
@@ -56,6 +60,11 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.settings = {
+    connection = {
+      "wifi.band" = "bg";
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -95,6 +104,14 @@
   # Fingerprint
   services.fprintd.enable = true;
   security.pam.services.sudo.fprintAuth = true;
+  security.pam.services.login.fprintAuth = true;
+  security.pam.services.greetd.fprintAuth = true;
+  security.pam.services.cosmic-greeter.fprintAuth = true;
+
+  services.udev.extraRules = ''
+    # Disable autosuspend for Synaptics fingerprint sensor
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="06cb", ATTR{idProduct}=="00f9", ATTR{power/control}="on"
+  '';
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.matatan = {
@@ -104,6 +121,10 @@
     packages = [];
     shell = pkgs.zsh;
   };
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.users.matatan = import ./home.nix;
 
   programs.zsh.enable = true;
   programs.nix-ld.enable = true;
@@ -115,12 +136,8 @@
   environment.systemPackages = with pkgs; [
     wget
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    inputs.local-helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
   ];
-
-  # nixpkgs.config.allowUnfreePredicate = pkg:
-  #   builtins.elem (lib.getName pkg) [
-  #     "google-chrome"
-  #   ];
 
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
@@ -130,56 +147,6 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
-
-  # Home Manager
-  home-manager.users.matatan = {config, ...}: {
-    imports = [
-      inputs.nvf.homeManagerModules.default
-      ../../modules/shell.nix
-      ../../modules/git.nix
-      ../../modules/nvf-config.nix
-      ../../modules/wezterm.nix
-      ../../modules/opencode.nix
-    ];
-
-    home.stateVersion = "24.11";
-    home.username = "matatan";
-    home.homeDirectory = "/home/matatan";
-    home.packages = with pkgs; [
-      # ai
-      gemini-cli
-
-      # shell
-      tmux
-      eza
-      bat
-      fzf
-      ripgrep
-      fd
-      zoxide
-      wl-clipboard
-
-      wezterm
-      firefox
-      google-chrome
-      home-manager
-      tree-sitter-bin
-      ascii-image-converter
-      libreoffice
-    ];
-
-    sops = {
-      defaultSopsFile = ../../secrets/secrets.yaml;
-      defaultSopsFormat = "yaml";
-      age.keyFile = "/home/matatan/.config/sops/age/keys.txt";
-    };
-
-    programs.zsh.enable = true;
-    programs.direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
