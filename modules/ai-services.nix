@@ -27,6 +27,7 @@
       VLLM_NCCL_SO_PATH = "${pkgs.cudaPackages.nccl}/lib/libnccl.so.2";
       VLLM_LOGGING_LEVEL = "DEBUG";
       VLLM_DEBUG_LOG_API_SERVER_REQUEST = "1"; # This prints the incoming JSON from OpenCode
+      VLLM_USE_FLASHINFER_SAMPLER = "0";
     };
 
     serviceConfig = {
@@ -34,21 +35,21 @@
         ${pkgs-ai.vllm-glm}/bin/vllm serve QuantTrio/GLM-4.7-Flash-AWQ \
           --host 0.0.0.0 --port 8000 \
           --tensor-parallel-size 1 \
-          --swap-space 4 \
-          --distributed-executor-backend uni \
-            --max-model-len 24000 \
-            --gpu-memory-utilization 0.9 \
-            --enable-expert-parallel \
-            --enable-auto-tool-choice \
-            --tool-call-parser glm47 \
-            --reasoning-parser glm45 \
-            --speculative-config.method mtp \
-            --speculative-config.num_speculative_tokens 1 \
-            --trust-remote-code \
-            --enable-prefix-caching \
-            --enable-chunked-prefill \
-            --max-num-batched-tokens 8192 \
-            --disable-log-requests \
+          --max-num-seqs 8 \
+          --attention-backend triton_mla \
+          --gpu-memory-utilization 0.95 \
+          --max-model-len 65536 \
+          --kv-cache-dtype auto \
+          --qwantization awq \
+          --dtype float16 \
+          --enable-auto-tool-choice \
+          --tool-call-parser glm47 \
+          --reasoning-parser glm45 \
+          --trust-remote-code \
+          --enable-prefix-caching \
+          --enable-chunked-prefill \
+          --max-num-batched-tokens 2048 \
+          --disable-log-requests \
           --served-model-name glm-47-flash
       '';
 

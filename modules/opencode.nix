@@ -50,7 +50,7 @@
                 "glm-47-flash": {
                   "id": "glm-47-flash",
                   "limit": {
-                    "context": 24000,
+                    "context": 65536,
                     "output": 1024
                   }
                 },
