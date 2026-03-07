@@ -81,6 +81,10 @@
     };
   };
 
+  home.file.".config/opencode/AGENTS.md" = {
+    source = ./opencode/opencode-global-AGENTS.md;
+  };
+
   programs.opencode = {
     enable = true;
     package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
@@ -93,7 +97,7 @@
         '';
     });
 
-    agents = ./agents;
-    skills = ./skills;
+    # agents = ./opencode/agents;
+    skills = ./opencode/skills;
   };
 }

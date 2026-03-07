@@ -2,13 +2,12 @@
   pkgs,
   lib,
   ...
-}: 
-let
-  grammarSource = if pkgs.stdenv.isDarwin
-                  then pkgs.vimPlugins.nvim-treesitter.builtGrammars
-                  else pkgs.vimPlugins.nvim-treesitter-legacy.builtGrammars;  
-in
-{
+}: let
+  grammarSource =
+    if pkgs.stdenv.isDarwin
+    then pkgs.vimPlugins.nvim-treesitter.builtGrammars
+    else pkgs.vimPlugins.nvim-treesitter-legacy.builtGrammars;
+in {
   imports = [
     ./nvf-keymaps.nix
   ];
@@ -60,7 +59,11 @@ in
         clipboard.providers.wl-copy.enable = pkgs.stdenv.isLinux;
 
         extraPackages = with pkgs; [
-          (if stdenv.isDarwin then tree-sitter else tree-sitter-bin)
+          (
+            if stdenv.isDarwin
+            then tree-sitter
+            else tree-sitter-bin
+          )
           gcc
           ripgrep
           fd

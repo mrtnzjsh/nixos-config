@@ -59,4 +59,3 @@
     doomDir = ../../modules/doom-config;
   };
 }
-

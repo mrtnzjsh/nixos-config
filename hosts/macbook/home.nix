@@ -51,20 +51,4 @@
     enable = true;
     doomDir = ../../modules/doom-config;
   };
-
-  # # This symlinks fonts directly into ~/Library/Fonts
-  # # making them immediately visible to all Apps
-  # home.file."Library/Fonts".source = 
-  #   let
-  #     # Collect all fonts from your font packages
-  #     fontPackages = with pkgs; [
-  #       nerd-fonts.fira-code
-  #       nerd-fonts.jetbrains-mono
-  #       nerd-fonts.iosevka
-  #     ];
-  #   in
-  #   pkgs.symlinkJoin {
-  #     name = "user-fonts";
-  #     paths = fontPackages;
-  #   } + "/share/fonts/truetype"; # Path suffix depends on the package structure
 }

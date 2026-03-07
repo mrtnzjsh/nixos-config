@@ -1,9 +1,13 @@
-{pkgs, ...}: 
-let
-  theme = if pkgs.stdenv.isDarwin then "Tokyo Night" else "Batman";
-  font = if pkgs.stdenv.isDarwin then "JetBrainsMono Nerd Font" else "JetBrains Mono Nerd Font";
-in
-{
+{pkgs, ...}: let
+  theme =
+    if pkgs.stdenv.isDarwin
+    then "Tokyo Night"
+    else "Batman";
+  font =
+    if pkgs.stdenv.isDarwin
+    then "JetBrainsMono Nerd Font"
+    else "JetBrains Mono Nerd Font";
+in {
   programs.wezterm = {
     enable = true;
     extraConfig = ''
