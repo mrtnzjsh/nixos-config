@@ -8,6 +8,9 @@
     # Specifically for ai tooling that needs newest commit
     nixpkgs-ai.url = "github:nixos/nixpkgs/master";
 
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+
     local-helium = {
       url = "path:/home/matatan/Developer/nur-packages";
     };
@@ -35,6 +38,8 @@
     self,
     nixpkgs,
     nixpkgs-ai,
+    nix-darwin,
+    nix-homebrew,
     local-helium,
     nixos-hardware,
     home-manager,
@@ -140,6 +145,25 @@
                 };
               })
             ];
+          }
+        ];
+      };
+    };
+    darwinConfigurations = {
+      matatan-mbp = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = { inherit inputs; };
+
+        modules = [
+          ./hosts/macbook/configuration.nix
+          nix-homebrew.darwinModules.nix-homebrew
+          inputs.home-manager.darwinModules.home-manager
+          {
+            nix-homebrew = {
+              enable = true;
+              user = "matatan";
+              autoMigrate = true;
+            };
           }
         ];
       };

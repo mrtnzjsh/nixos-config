@@ -1,4 +1,8 @@
-{...}: {
+{pkgs, ...}: 
+let
+  rebuildCommand = if pkgs.stdenv.isLinux then "nixos-rebuild" else "darwin-rebuild";
+in
+{
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -6,14 +10,13 @@
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      update = "pushd ~/nixos-config/ >/dev/null && git add -A && sudo nixos-rebuild switch --flake $HOME/nixos-config#$(hostname) && popd >/dev/null";
+      update = "pushd ~/nixos-config/ >/dev/null && git add -A && sudo '${rebuildCommand}' switch --flake .#$(hostname -s) && popd >/dev/null";
       nix-check = "nix flake check ~/nixos-config";
       v = "nvim";
       conf = "cd $HOME/nixos-config/ && nvim .";
       ls = "eza --icons";
       ll = "eza -l --icons";
       cat = "bat";
-      pbcopy = "wl-copy";
 
       # git
       g = "git";
@@ -23,11 +26,19 @@
       gcm = "gc -m";
       gco = "g checkout";
       gpr = "git pull --rebase";
-    };
+    } // (pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+      # These keys will ONLY exist on Linux. On macOS, they won't be defined at all.
+      pbcopy = "wl-copy";
+      pbpaste = "wl-paste";
+    });
 
     history = {
       size = 10000;
       path = "$HOME/.zsh_history";
+    };
+
+    sessionVariables = {
+      SOPS_AGE_KEY_FILE = "$HOME/.config/sops/age/keys.txt";
     };
   };
 

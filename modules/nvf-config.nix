@@ -2,7 +2,13 @@
   pkgs,
   lib,
   ...
-}: {
+}: 
+let
+  grammarSource = if pkgs.stdenv.isDarwin
+                  then pkgs.vimPlugins.nvim-treesitter.builtGrammars
+                  else pkgs.vimPlugins.nvim-treesitter-legacy.builtGrammars;  
+in
+{
   imports = [
     ./nvf-keymaps.nix
   ];
@@ -51,10 +57,10 @@
           };
         };
 
-        clipboard.providers.wl-copy.enable = true;
+        clipboard.providers.wl-copy.enable = pkgs.stdenv.isLinux;
 
         extraPackages = with pkgs; [
-          tree-sitter-bin
+          (if stdenv.isDarwin then tree-sitter else tree-sitter-bin)
           gcc
           ripgrep
           fd
@@ -117,6 +123,11 @@
           splitright = true;
           tabstop = 2;
           wrap = false;
+
+          foldcolumn = "1";
+          foldlevel = 99;
+          foldlevelstart = 99;
+          foldenable = true;
         };
 
         statusline.lualine = {
@@ -163,11 +174,41 @@
           style = "frappe";
         };
 
+        ui = {
+          nvim-ufo = {
+            enable = true;
+            setupOpts = {
+              open_fold_hl_timeout = 150;
+              close_fold_kinds_for_ft = {
+                default = ["imports" "comment"];
+                c = ["comment" "region"];
+              };
+              close_fold_current_line_for_ft = {
+                default = true;
+                c = false;
+              };
+              preview = {
+                win_config = {
+                  border = ["" "-" "" "" "" "-" "" ""];
+                  winhighlight = "Normal:Folded";
+                  winblend = 0;
+                };
+                mappings = {
+                  scrollU = "<C-u>";
+                  scrollD = "<C-d>";
+                  jumpTop = "[";
+                  jumpBot = "]";
+                };
+              };
+            };
+          };
+        };
+
         treesitter = {
           enable = true;
           indent.enable = true;
           addDefaultGrammars = true;
-          grammars = with pkgs.vimPlugins.nvim-treesitter-legacy.builtGrammars; [
+          grammars = with grammarSource; [
             lua
             nix
             bash

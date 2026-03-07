@@ -30,6 +30,7 @@
     zoxide
     wl-clipboard
     fastfetch
+    starship
 
     wezterm
     firefox
