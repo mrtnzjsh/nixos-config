@@ -30,7 +30,7 @@
               "model": "litellm/glm-47-flash"
             },
             "plan": {
-              "model": "litellm/qwen-general"
+              "model": "litellm/glm-47-flash"
             }
           },
           "provider": {
@@ -44,21 +44,14 @@
                   "CF-Access-Client-Id": "${config.sops.placeholder."cloudflare/litellm_client_id"}",
                   "CF-Access-Client-Secret": "${config.sops.placeholder."cloudflare/litellm_client_secret"}"
                 },
-                "stream": false,
+                "stream": true,
               },
               "models": {
                 "glm-47-flash": {
                   "id": "glm-47-flash",
                   "limit": {
-                    "context": 65536,
-                    "output": 1024
-                  }
-                },
-                "qwen-general": {
-                  "id": "qwen-general",
-                  "limit": {
-                    "context": 49152,
-                    "output": 1024
+                    "context": 131072,
+                    "output": 8192
                   }
                 }
               }
@@ -68,9 +61,10 @@
             "bash": {
               "rm *": "deny",
               "sudo *": "ask",
-              "ls *": "allow"
+              "ls *": "allow",
+              "git diff *": "allow"
             },
-            "edit": "allow",
+            "edit": "ask",
             "read": "allow",
             "question": "deny"
           },
