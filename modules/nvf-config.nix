@@ -70,6 +70,28 @@ in {
           lazygit
         ];
 
+        extraPlugins = {
+          opencode-nvim = {
+            package = pkgs.vimPlugins.opencode-nvim;
+            setup = ''
+              vim.g.opencode_opts = {}
+              vim.o.autoread = true -- Required for `opts.events.reload`
+              vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, { desc = "Ask opencode…" })
+              vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end, { desc = "Execute opencode action…" })
+              vim.keymap.set({ "n", "t" }, "<C-.>", function() require("opencode").toggle() end, { desc = "Toggle opencode" })
+              vim.keymap.set({ "n", "x" }, "go", function() return require("opencode").operator("@this ") end, { desc = "Add range to opencode", expr = true })
+              vim.keymap.set("n", "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
+              vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, { desc = "Scroll opencode up" })
+              vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
+
+              -- Alternative increment/decrement since opencode uses <C-a> and <C-x>
+              vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+              vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+            '';
+            after = ["snacks-nvim"];
+          };
+        };
+
         languages = {
           enableFormat = true;
           enableTreesitter = true;
@@ -113,19 +135,19 @@ in {
 
         options = {
           autoindent = true;
-          backspace = "indent,eol,start";
-          clipboard = "unnamedplus";
-          cursorline = true;
-          expandtab = true;
-          ignorecase = true;
-          number = true;
-          relativenumber = true;
-          shiftwidth = 2;
-          smartcase = true;
-          splitbelow = true;
-          splitright = true;
           tabstop = 2;
+          shiftwidth = 2;
+          clipboard = "unnamedplus";
+          expandtab = true;
           wrap = false;
+          ignorecase = true;
+          smartcase = true;
+          cursorline = true;
+          backspace = "indent,eol,start";
+          splitright = true;
+          splitbelow = true;
+          relativenumber = true;
+          number = true;
 
           foldcolumn = "1";
           foldlevel = 99;
@@ -173,8 +195,8 @@ in {
 
         theme = {
           enable = true;
-          name = "catppuccin";
-          style = "frappe";
+          name = "tokyonight";
+          style = "night";
         };
 
         ui = {
@@ -235,7 +257,7 @@ in {
                   }
                   {
                     section = "terminal";
-                    cmd = "ascii-image-converter ~/nixos-config/sin_rostro_2.jpg -C";
+                    cmd = "ascii-image-converter ~/.nixos-config/sin_rostro_2.jpg -C";
                     random = 10;
                     pane = 2;
                     indent = 4;

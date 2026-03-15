@@ -60,6 +60,13 @@
         allowUnfreePredicate = pkg:
           builtins.elem (nixpkgs.lib.getName pkg) [
             "google-chrome"
+            "steam"
+            "steam-original"
+            "steam-unwrapped"
+            "steam-run"
+            "nvidia-x11"
+            "nvidia-settings"
+            "1password"
           ];
       };
     };
@@ -80,6 +87,27 @@
         modules = [
           {nixpkgs.pkgs = pkgs;}
           ./hosts/nixtop/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.extraSpecialArgs = {
+              inherit inputs opencode nvf nix-doom-emacs pkgs;
+            };
+          }
+
+          {
+            nix.settings = {
+              trusted-users = ["root" "matatan"];
+            };
+          }
+        ];
+      };
+
+      nixdesk = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+
+        modules = [
+          {nixpkgs.pkgs = pkgs;}
+          ./hosts/nixdesk/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = {

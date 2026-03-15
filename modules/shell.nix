@@ -12,10 +12,10 @@ in {
 
     shellAliases =
       {
-        update = "pushd ~/nixos-config/ >/dev/null && git add -A && sudo '${rebuildCommand}' switch --flake .#$(hostname -s) && popd >/dev/null";
-        nix-check = "nix flake check ~/nixos-config";
+        update = "pushd ~/.nixos-config/ >/dev/null && git add -A && sudo '${rebuildCommand}' switch --flake .#$(hostname -s) && popd >/dev/null";
+        nix-check = "nix flake check ~/.nixos-config";
         v = "nvim";
-        conf = "cd $HOME/nixos-config/ && nvim .";
+        conf = "cd $HOME/.nixos-config/ && nvim .";
         ls = "eza --icons";
         ll = "eza -l --icons";
         cat = "bat";

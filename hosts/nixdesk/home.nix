@@ -26,7 +26,6 @@
     bat
     fzf
     ripgrep
-    fd
     zoxide
     wl-clipboard
     fastfetch
