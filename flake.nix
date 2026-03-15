@@ -11,8 +11,11 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
-    local-helium = {
-      url = "path:/home/matatan/Developer/nur-packages";
+    helium = {
+      type = "github";
+      owner = "mrtnzjsh";
+      repo = "nur-packages";
+      ref = "feat/flake-support";
     };
 
     home-manager = {
@@ -40,7 +43,7 @@
     nixpkgs-ai,
     nix-darwin,
     nix-homebrew,
-    local-helium,
+    helium,
     nixos-hardware,
     home-manager,
     nix-doom-emacs,

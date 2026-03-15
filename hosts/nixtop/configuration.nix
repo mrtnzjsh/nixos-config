@@ -108,6 +108,18 @@
   security.pam.services.login.fprintAuth = true;
   security.pam.services.greetd.fprintAuth = true;
   security.pam.services.cosmic-greeter.fprintAuth = true;
+  security.pam.services.cosmic-comp.fprintAuth = true;
+  security.pam.services.cosmic.fprintAuth = true;
+  security.pam.services.cosmic-lock.fprintAuth = true;
+
+  # Prioritize Fingerprint over Password
+  security.pam.services.sudo.rules.auth.fprintd.order = 10;
+  security.pam.services.login.rules.auth.fprintd.order = 10;
+  security.pam.services.greetd.rules.auth.fprintd.order = 10;
+  security.pam.services.cosmic-greeter.rules.auth.fprintd.order = 10;
+  security.pam.services.cosmic-comp.rules.auth.fprintd.order = 10;
+  security.pam.services.cosmic.rules.auth.fprintd.order = 10;
+  security.pam.services.cosmic-lock.rules.auth.fprintd.order = 10;
 
   services.udev.extraRules = ''
     # Disable autosuspend for Synaptics fingerprint sensor
@@ -139,7 +151,7 @@
   environment.systemPackages = with pkgs; [
     wget
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    inputs.local-helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
   ];
 
   fonts.packages = with pkgs; [
