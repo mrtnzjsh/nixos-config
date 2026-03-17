@@ -1,6 +1,6 @@
 keys:
   - &nixtop age1qg2xu2fhr2jn9mtxah5x5v9laj9lexc555lvqh22tw04d9plw3qs4l74gz
-  # - &nixos age1dyqlg23gm64qpa8usqujr5kd26tgwhahg0ngsclpnn0q2ada3qpqqg8yll
+  - &nixos age1dyqlg23gm64qpa8usqujr5kd26tgwhahg0ngsclpnn0q2ada3qpqqg8yll
   - &matatan_mbp age10vhkpj4xuzx644dy65d8lygp4y0jfuzm0ru03vklnwzk493avvmqk5gyd3
   - &nixdesk age1a42s9vun52fhss8z3mg4uaekl2uldcs5uvh7p93s83m89nv7c46sahq2gy
 
@@ -9,6 +9,6 @@ creation_rules:
     key_groups:
       - age:
           - *nixtop
-          # - *nixos
+          - *nixos
           - *matatan_mbp
           - *nixdesk
