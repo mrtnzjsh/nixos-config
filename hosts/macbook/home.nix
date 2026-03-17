@@ -6,6 +6,7 @@
 }: {
   imports = [
     inputs.nvf.homeManagerModules.default
+    inputs.sops-nix.homeManagerModules.sops
     inputs.nix-doom-emacs.homeModule
     ../../modules/shell.nix
     ../../modules/git.nix

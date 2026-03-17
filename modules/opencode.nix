@@ -79,7 +79,7 @@
 
   programs.opencode = {
     enable = true;
-    package = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
+    package = inputs.opencode.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
       nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [pkgs.makeWrapper];
       postFixup =
         (oldAttrs.postFixup or "")

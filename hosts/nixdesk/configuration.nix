@@ -69,7 +69,7 @@
 
   users.users.matatan = {
     isNormalUser = true;
-    extraGroups = ["wheel" "audio"]; # Enable ‘sudo’ for the user.
+    extraGroups = ["wheel" "audio"];
     shell = pkgs.zsh;
     packages = with pkgs; [
       tree

@@ -5,7 +5,6 @@
 }: {
   nix.enable = false;
   nix.settings.experimental-features = ["nix-command" "flakes"];
-  # nix.optimise.automatic = true;
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
@@ -44,7 +43,7 @@
     ];
   };
 
-  environment.systemPackages = with pkgs; [];
+  environment.systemPackages = [];
 
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code

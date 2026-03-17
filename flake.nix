@@ -62,7 +62,7 @@
 
     # Pkgs for standard desktop hosts
     pkgs-desktop = import nixpkgs {
-      inherit system;
+      localSystem = system;
       overlays = [(import ./overlays/tree-sitter.nix)];
       config = {
         allowUnfreePredicate = pkg:
@@ -82,7 +82,7 @@
 
     # Pkgs for the AI-focused 'nixos' host
     pkgs-nixos = import nixpkgs {
-      inherit system;
+      localSystem = system;
       overlays = [
         (import ./overlays/tree-sitter.nix)
         (import ./hosts/nixos/ai-overlays.nix)
@@ -120,7 +120,7 @@
     };
 
     pkgs-ai = import nixpkgs-ai {
-      inherit system;
+      localSystem = system;
       overlays = [(import ./hosts/nixos/ai-overlays.nix)];
       config = {
         allowUnfree = true;
@@ -204,7 +204,7 @@
 
     darwinConfigurations = {
       matatan-mbp = nix-darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
+        hostPlatform = "aarch64-darwin";
         specialArgs = {inherit inputs;};
 
         modules = [
@@ -220,11 +220,6 @@
           }
         ];
       };
-    };
-
-    packages.${system} = {
-      inherit (pkgs-ai) vllm-glm;
-      default = pkgs-ai.vllm-glm;
     };
   };
 }

@@ -60,12 +60,11 @@
     "intel_idle.max_cstate=4"
   ];
 
-  networking.hostName = "nixtop"; # Define your hostname.
-  networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
+  networking.hostName = "nixtop";
+  networking.wireless.enable = true;
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
-  # Enable networking
   networking.networkmanager.enable = true;
   networking.networkmanager.settings = {
     connection = {
@@ -73,10 +72,8 @@
     };
   };
 
-  # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -135,7 +132,6 @@
     ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="on"
   '';
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.matatan = {
     isNormalUser = true;
     description = "matatan";
@@ -153,12 +149,10 @@
 
   environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
   environment.shells = [pkgs.zsh];
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     wget
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    vim
+    inputs.helium.packages.${system}.helium
   ];
 
   fonts.packages = with pkgs; [
@@ -167,14 +161,7 @@
     nerd-fonts.iosevka
   ];
 
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "25.11";
 }

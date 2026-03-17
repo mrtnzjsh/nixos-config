@@ -22,10 +22,8 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.download-buffer-size = 524288000;
 
-  # Time and Locale
   time.timeZone = "America/New_York";
 
-  # User account configuration
   users.users.matatan = {
     isNormalUser = true;
     extraGroups = ["wheel"];
@@ -111,10 +109,9 @@
     pkgs-ai.vllm-glm
   ];
 
-  # Firewall settings
   networking.firewall.enable = false;
 
-  system.stateVersion = "24.11"; #
+  system.stateVersion = "24.11";
 
   fileSystems = {
     "/" = {
