@@ -91,7 +91,7 @@
     alsa-utils
     pulseaudio
 
-    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    inputs.helium.packages.${pkgs.system}.helium
     steam
   ];
 
