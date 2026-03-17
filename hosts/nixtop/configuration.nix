@@ -10,7 +10,14 @@
     inputs.nixos-hardware.nixosModules.common-cpu-intel
     inputs.nixos-hardware.nixosModules.common-pc-laptop
     inputs.nixos-hardware.nixosModules.common-pc-laptop-ssd
+    ../../modules/pia.nix
   ];
+
+  sops = {
+    defaultSopsFile = ../../secrets/secrets.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/matatan/.config/sops/age/keys.txt";
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;

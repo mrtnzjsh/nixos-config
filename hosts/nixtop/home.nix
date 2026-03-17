@@ -19,6 +19,7 @@
   home.packages = with pkgs; [
     # ai
     gemini-cli
+    obsidian
 
     # shell
     tmux

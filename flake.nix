@@ -31,6 +31,11 @@
 
     opencode.url = "github:anomalyco/opencode";
 
+    pia = {
+      url = "github:mrehanabbasi/pia.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,6 +55,7 @@
     nvf,
     opencode,
     sops-nix,
+    pia,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -69,6 +75,7 @@
             "nvidia-x11"
             "nvidia-settings"
             "1password"
+            "obsidian"
           ];
       };
     };
@@ -127,6 +134,7 @@
 
         modules = [
           {nixpkgs.pkgs = pkgs-desktop;}
+          pia.nixosModules.default
           ./hosts/nixtop/configuration.nix
           home-manager.nixosModules.home-manager
           {
