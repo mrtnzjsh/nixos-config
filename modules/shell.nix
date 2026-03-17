@@ -53,6 +53,8 @@ in {
       };
 
       format = builtins.concatStringsSep " " [
+        "$username"
+        "$hostname"
         "$directory"
         "$git_branch"
         "$git_status"
@@ -62,6 +64,19 @@ in {
         "$line_break"
         "$character"
       ];
+
+      username = {
+        show_always = true;
+        style_user = "blue bold";
+        style_root = "red bold";
+        format = "[$user]($style)";
+      };
+
+      hostname = {
+        ssh_only = false;
+        style = "green bold";
+        format = "on [$hostname]($style)";
+      };
     };
   };
 
