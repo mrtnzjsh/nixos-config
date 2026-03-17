@@ -8,15 +8,20 @@ final: prev: {
         checkPhase = "true";
         installCheckPhase = "true";
         nativeCheckInputs = [];
+        pythonImportsCheck = [];
+      });
+
+      rapidocr-onnxruntime = py-prev.rapidocr-onnxruntime.overrideAttrs (old: {
+        doCheck = false;
       });
 
       huggingface-hub = py-prev.huggingface-hub.overrideAttrs (old: rec {
-        version = "1.4.1";
+        version = "1.5.0";
         src = prev.fetchFromGitHub {
           owner = "huggingface";
           repo = "huggingface_hub";
           rev = "v${version}";
-          hash = "sha256-At3FN+dplQ3L9B4vDZrEvREdwgepUvzWC7yeU6L5XY8=";
+          hash = "sha256-XuqZvTu3DuncGpRWXipxtDLY2alY7QVm89ZmpgTdfVo=";
         };
         dontCheckRuntimeDeps = true;
         doCheck = false;
@@ -36,7 +41,7 @@ final: prev: {
           owner = "huggingface";
           repo = "transformers";
           rev = "main";
-          hash = "sha256-dvj2va9dxLU38QsgM3GGeKJjU8XMK9Sk3t3SeS+opT4=";
+          hash = "sha256-7IOm9KEZDB6KGCmg5TvagSs/x9CYYLBkRNWqQ5wvSEw=";
         };
         dontCheckRuntimeDeps = true;
         doCheck = false;
@@ -51,7 +56,10 @@ final: prev: {
     };
   };
 
-  # 2. Define vllm-glm at the top level of the overlay
+  # 2. Fix for Python 3.12 (RapidOCR test core-dumps) - ensuring it's available as python312Packages too
+  python312Packages = final.python3.pkgs;
+
+  # 3. Define vllm-glm at the top level of the overlay
   vllm-glm =
     (final.python3.pkgs.vllm.override {
       # This ensures it uses the patched transformers from the set above

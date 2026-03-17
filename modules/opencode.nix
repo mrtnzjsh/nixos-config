@@ -4,8 +4,6 @@
   config,
   ...
 }: {
-  imports = [inputs.sops-nix.homeManagerModules.sops];
-
   sops = {
     secrets."self_hosted/litellm_url" = {};
     secrets."self_hosted/api_key" = {};
@@ -23,7 +21,7 @@
             "reserved": 8192,
             "threshold": 0.65
           },
-          "model": "litellm/qwen-general",
+          "model": "litellm/glm-47-flash",
           "default_agent": "plan",
           "agent": {
             "build": {

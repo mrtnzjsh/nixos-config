@@ -1,16 +1,9 @@
 {
   pkgs,
   pkgs-ai,
-  inputs,
   config,
   ...
 }: {
-  imports = [inputs.sops-nix.homeManagerModules.sops];
-
-  sops = {
-    secrets."hugging_face/token" = {};
-  };
-
   systemd.services.vllm-glm = {
     description = "vLLM - GLM-4.7-Flash";
     wantedBy = ["multi-user.target"];
@@ -19,18 +12,17 @@
     # This explicitly adds the lscpu binary to the service environment
     path = with pkgs; [util-linux pciutils coreutils cudaPackages.nccl pkgs-ai.vllm-glm];
 
-    environment = {
-      VLLM_USE_V1 = "0";
-      CUDA_VISIBLE_DEVICES = "0,1";
-      CUDA_DEVICE_ORDER = "PCI_BUS_ID"; # Fix for mixed 3090/3090 Ti setup
-      HF_TOKEN = config.sops.placeholder."hugging_face/token";
-      VLLM_NCCL_SO_PATH = "${pkgs.cudaPackages.nccl}/lib/libnccl.so.2";
-      VLLM_LOGGING_LEVEL = "INFO";
-      VLLM_DEBUG_LOG_API_SERVER_REQUEST = "1"; # This prints the incoming JSON from OpenCode
-      PYTORCH_ALLOC_CONF = "expandable_segments:True";
-    };
-
     serviceConfig = {
+      EnvironmentFile = config.sops.secrets.HF_TOKEN.path;
+      Environment = [
+        "VLLM_USE_V1=0"
+        "CUDA_VISIBLE_DEVICES=0,1"
+        "CUDA_DEVICE_ORDER=PCI_BUS_ID"
+        "VLLM_NCCL_SO_PATH=${pkgs.cudaPackages.nccl}/lib/libnccl.so.2"
+        "VLLM_LOGGING_LEVEL=INFO"
+        "VLLM_DEBUG_LOG_API_SERVER_REQUEST=1"
+        "PYTORCH_ALLOC_CONF=expandable_segments:True"
+      ];
       ExecStart = ''
         ${pkgs-ai.vllm-glm}/bin/vllm serve QuantTrio/GLM-4.7-Flash-AWQ \
           --host 0.0.0.0 --port 8000 \
@@ -41,7 +33,6 @@
           --disable-custom-all-reduce \
           --trust-remote-code \
           --kv-cache-dtype auto \
-          --qwantization awq \
           --enable-auto-tool-choice \
           --tool-call-parser glm47 \
           --reasoning-parser glm45 \

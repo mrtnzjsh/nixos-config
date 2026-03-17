@@ -53,7 +53,9 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
-    pkgs = import nixpkgs {
+
+    # Pkgs for standard desktop hosts
+    pkgs-desktop = import nixpkgs {
       inherit system;
       overlays = [(import ./overlays/tree-sitter.nix)];
       config = {
@@ -71,6 +73,45 @@
       };
     };
 
+    # Pkgs for the AI-focused 'nixos' host
+    pkgs-nixos = import nixpkgs {
+      inherit system;
+      overlays = [
+        (import ./overlays/tree-sitter.nix)
+        (import ./hosts/nixos/ai-overlays.nix)
+      ];
+      config = {
+        allowUnfree = true;
+        allowBroken = true;
+        cudaSupport = true;
+        allowUnfreePredicate = pkg:
+          builtins.elem (nixpkgs.lib.getName pkg) [
+            "google-chrome"
+            "steam"
+            "steam-original"
+            "steam-unwrapped"
+            "steam-run"
+            "1password"
+            "nvidia-x11"
+            "nvidia-settings"
+            "open-webui"
+            "cudnn"
+            "nccl"
+          ]
+          || (
+            nixpkgs.lib.hasPrefix "cuda" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcusparse" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcublas" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcufft" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcurand" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcusolver" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libnvjitlink" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libnpp" (nixpkgs.lib.getName pkg)
+            || nixpkgs.lib.hasPrefix "libcufile" (nixpkgs.lib.getName pkg)
+          );
+      };
+    };
+
     pkgs-ai = import nixpkgs-ai {
       inherit system;
       overlays = [(import ./hosts/nixos/ai-overlays.nix)];
@@ -85,12 +126,13 @@
         specialArgs = {inherit inputs;};
 
         modules = [
-          {nixpkgs.pkgs = pkgs;}
+          {nixpkgs.pkgs = pkgs-desktop;}
           ./hosts/nixtop/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = {
-              inherit inputs opencode nvf nix-doom-emacs pkgs;
+              inherit inputs opencode nvf nix-doom-emacs;
+              pkgs = pkgs-desktop;
             };
           }
 
@@ -106,12 +148,13 @@
         specialArgs = {inherit inputs;};
 
         modules = [
-          {nixpkgs.pkgs = pkgs;}
+          {nixpkgs.pkgs = pkgs-desktop;}
           ./hosts/nixdesk/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = {
-              inherit inputs opencode nvf nix-doom-emacs pkgs;
+              inherit inputs opencode nvf nix-doom-emacs;
+              pkgs = pkgs-desktop;
             };
           }
 
@@ -123,21 +166,12 @@
         ];
       };
 
-      packages.${system} = {
-        vllm-glm = pkgs-ai.vllm-glm;
-        default = pkgs-ai.vllm-glm;
-      };
-
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs pkgs-ai;};
         modules = [
+          {nixpkgs.pkgs = pkgs-nixos;}
           ./hosts/nixos/configuration.nix
-          inputs.home-manager.nixosModules.default
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs opencode nvf nix-doom-emacs pkgs;
-            };
-          }
+          home-manager.nixosModules.home-manager
 
           {
             # 1. Update Binary Cache (Fixes security warnings and "ignoring substitute")
@@ -155,31 +189,11 @@
               # Critical for allowing non-root users to use the cache
               trusted-users = ["root" "matatan"];
             };
-
-            # 2. Overlays to fix broken Python dependencies on nixos-unstable
-            nixpkgs.overlays = [
-              (final: prev: {
-                # Fix for Python 3.12 (RapidOCR test core-dumps)
-                python312Packages = prev.python312Packages.override {
-                  overrides = pyFinal: pyPrev: {
-                    compressed-tensors = pyPrev.compressed-tensors.overrideAttrs (old: {
-                      doCheck = false; # Disables pytest to allow the build to complete
-                      checkPhase = "true";
-                      installCheckPhase = "true";
-                      pythonImportsCheck = [];
-                    });
-
-                    rapidocr-onnxruntime = pyPrev.rapidocr-onnxruntime.overrideAttrs (old: {
-                      doCheck = false;
-                    });
-                  };
-                };
-              })
-            ];
           }
         ];
       };
     };
+
     darwinConfigurations = {
       matatan-mbp = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
@@ -198,6 +212,11 @@
           }
         ];
       };
+    };
+
+    packages.${system} = {
+      inherit (pkgs-ai) vllm-glm;
+      default = pkgs-ai.vllm-glm;
     };
   };
 }

@@ -1,21 +1,11 @@
-{
-  inputs,
-  config,
-  ...
-}: {
-  imports = [inputs.sops-nix.homeManagerModules.sops];
-
-  sops = {
-    secrets."self_hosted/owui_api_key" = {};
-  };
-
+{config, ...}: {
   services.open-webui = {
     enable = true;
     host = "0.0.0.0";
-    port = 8080; #
+    port = 8080;
+    environmentFile = config.sops.secrets.OPENWEBUI_API_KEY.path;
     environment = {
       OLLAMA_BASE_URL = "http://localhost:4000";
-      OPENWEBUI_API_KEY = "${config.sops.placeholder."self_hosted/owui_api_key"}";
       WEBUI_AUTH = "True";
     };
   };

@@ -1,7 +1,7 @@
 {
-  lib,
   pkgs,
   pkgs-ai,
+  inputs,
   ...
 }: {
   imports = [
@@ -9,6 +9,7 @@
     ../../modules/openweb-ui.nix
     ../../modules/cloudflared.nix
     ../../modules/ai-services.nix
+    inputs.sops-nix.nixosModules.sops
   ];
 
   # Bootloader settings
@@ -21,33 +22,6 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings.download-buffer-size = 524288000;
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowBroken = true;
-    cudaSupport = true;
-  };
-
-  # Binary Cache and Unfree permissions
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
-      "nvidia-x11"
-      "nvidia-settings"
-      "open-webui"
-      "cudnn"
-      "nccl"
-    ]
-    || (
-      lib.hasPrefix "cuda" (lib.getName pkg)
-      || lib.hasPrefix "libcusparse" (lib.getName pkg)
-      || lib.hasPrefix "libcublas" (lib.getName pkg)
-      || lib.hasPrefix "libcufft" (lib.getName pkg)
-      || lib.hasPrefix "libcurand" (lib.getName pkg)
-      || lib.hasPrefix "libcusolver" (lib.getName pkg)
-      || lib.hasPrefix "libnvjitlink" (lib.getName pkg)
-      || lib.hasPrefix "libnpp" (lib.getName pkg)
-      || lib.hasPrefix "libcufile" (lib.getName pkg)
-    );
-
   # Time and Locale
   time.timeZone = "America/New_York";
 
@@ -55,7 +29,7 @@
   users.users.matatan = {
     isNormalUser = true;
     extraGroups = ["wheel"];
-    packages = with pkgs; [tree neovim]; #
+    packages = with pkgs; [tree]; #
     shell = pkgs.zsh; #
     home = "/home/matatan";
     openssh.authorizedKeys.keys = [
@@ -73,9 +47,20 @@
     nerd-fonts.iosevka
   ];
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.matatan = import ./home.nix;
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+
+    extraSpecialArgs = {
+      inherit inputs pkgs pkgs-ai;
+      # Add the other specific inputs your flake defines
+      nvf = inputs.nvf;
+      opencode = inputs.opencode;
+      nix-doom-emacs = inputs.nix-doom-emacs;
+    };
+
+    users.matatan = import ./home.nix;
+  };
 
   programs.zsh.enable = true;
   programs.nix-ld.enable = true;
@@ -84,6 +69,14 @@
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/home/matatan/.config/sops/age/keys.txt";
+    secrets.HF_TOKEN = {
+      key = "hugging_face/token";
+      owner = "matatan";
+    };
+    secrets.OPENWEBUI_API_KEY = {
+      key = "self_hosted/owui_api_key";
+      owner = "matatan";
+    };
   };
 
   # NVIDIA Graphics Configuration
