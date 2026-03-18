@@ -4,9 +4,9 @@
   ...
 }: {
   imports = [
-    inputs.nix-doom-emacs.homemodule
-    inputs.nvf.homemanagermodules.default
-    inputs.sops-nix.homemanagermodules.sops
+    inputs.nix-doom-emacs.homeModule
+    inputs.nvf.homeManagerModules.default
+    inputs.sops-nix.homeManagerModules.sops
     ../../modules/shell.nix
     ../../modules/git.nix
     ../../modules/nvf-config.nix
@@ -14,7 +14,7 @@
   ];
 
   home.stateVersion = "25.11";
-  homeusername = "matatan";
+  home.username = "matatan";
   home.homeDirectory = "/home/matatan";
   home.packages = with pkgs; [
     gemini-cli

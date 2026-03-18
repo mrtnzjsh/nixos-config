@@ -3,6 +3,7 @@ keys:
   - &nixos age1dyqlg23gm64qpa8usqujr5kd26tgwhahg0ngsclpnn0q2ada3qpqqg8yll
   - &matatan_mbp age10vhkpj4xuzx644dy65d8lygp4y0jfuzm0ru03vklnwzk493avvmqk5gyd3
   - &nixdesk age1a42s9vun52fhss8z3mg4uaekl2uldcs5uvh7p93s83m89nv7c46sahq2gy
+  - &nixserv age10xnvnzne66hjtl6kpmppp5utctr6v4q73ryq0wdfn8f30u2vcsasr3yufm
 
 creation_rules:
   - path_regex: secrets/[^/]+\.yaml$
@@ -12,3 +13,4 @@ creation_rules:
           - *nixos
           - *matatan_mbp
           - *nixdesk
+          - *nixserv
