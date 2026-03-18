@@ -119,6 +119,11 @@
       };
     };
 
+    pkgs-nixserv = import nixpkgs {
+      localSystem = system;
+      overlays = [(import ./overlays/tree-sitter.nix)];
+    };
+
     pkgs-ai = import nixpkgs-ai {
       localSystem = system;
       overlays = [(import ./hosts/nixos/ai-overlays.nix)];
@@ -195,6 +200,21 @@
                 "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
               ];
               # Critical for allowing non-root users to use the cache
+              trusted-users = ["root" "matatan"];
+            };
+          }
+        ];
+      };
+
+      nixserv = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+
+        modules = [
+          {nixpkgs.pkgs = pkgs-nixserv;}
+          ./hosts/nixserv/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            nix.settings = {
               trusted-users = ["root" "matatan"];
             };
           }

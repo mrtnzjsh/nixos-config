@@ -27,8 +27,8 @@
   users.users.matatan = {
     isNormalUser = true;
     extraGroups = ["wheel"];
-    packages = with pkgs; [tree]; #
-    shell = pkgs.zsh; #
+    packages = with pkgs; [tree];
+    shell = pkgs.zsh;
     home = "/home/matatan";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG98QHRQZmFzHXbF8tnsn2DHvKo4ssoq5am0lepWIKND matatan@Joshuas-MBP.localdomain"
