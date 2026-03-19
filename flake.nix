@@ -11,6 +11,8 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
+    authentik-nix.url = "github:nix-community/authentik-nix";
+    nixarr.url = "github:nix-media-server/nixarr";
     helium = {
       type = "github";
       owner = "mrtnzjsh";
@@ -48,6 +50,8 @@
     nixpkgs-ai,
     nix-darwin,
     nix-homebrew,
+    authentik-nix,
+    nixarr,
     helium,
     nixos-hardware,
     home-manager,
@@ -122,6 +126,12 @@
     pkgs-nixserv = import nixpkgs {
       localSystem = system;
       overlays = [(import ./overlays/tree-sitter.nix)];
+      config = {
+        allowUnfreePredicate = pkg:
+          builtins.elem (nixpkgs.lib.getName pkg) [
+            "plexmediaserver"
+          ];
+      };
     };
 
     pkgs-ai = import nixpkgs-ai {
@@ -212,6 +222,9 @@
         modules = [
           {nixpkgs.pkgs = pkgs-nixserv;}
           ./hosts/nixserv/configuration.nix
+          nixarr.nixosModules.default
+          authentik-nix.nixosModules.default
+          pia.nixosModules.default
           home-manager.nixosModules.home-manager
           {
             nix.settings = {

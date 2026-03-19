@@ -2,7 +2,6 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 {
-  config,
   inputs,
   pkgs,
   ...
@@ -10,14 +9,32 @@
   imports = [
     ./hardware-configuration.nix
     inputs.sops-nix.nixosModules.sops
+    ../../modules/cloudflared.nix
+    ../../modules/nextcloud.nix
+    ../../modules/media.nix
+    ../../modules/nixarr.nix
+    ../../modules/couchdb.nix
+    ../../modules/authentik.nix
   ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.kernelPackages = pkgs.linuxPackages;
+  boot.supportedFilesystems = ["zfs"];
+
+  boot.zfs.extraPools = ["Sancocho"];
+
   networking.hostName = "nixserv"; # Define your hostname.
+  networking.hostId = "ca49bafa";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  nix.settings = {
+    # Fixes the "download buffer is full" warning
+    download-buffer-size = 134217728; # 128MB (Double the default)
+
+    experimental-features = ["nix-command" "flakes"];
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -104,12 +121,25 @@
     };
   };
 
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true; # Allows software to find the .local address
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     mdadm
+    zfs
+    wireguard-tools
+    inputs.pia.packages.${pkgs.system}.default
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -124,10 +154,26 @@
 
   # Open ports in the firewall.
   networking.firewall.enable = true;
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [80 443 9000];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  # Fixes the "Too many open files" error system-wide
+  security.pam.loginLimits = [
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "65536";
+    }
+    {
+      domain = "*";
+      type = "hard";
+      item = "nofile";
+      value = "1048576";
+    }
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

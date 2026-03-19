@@ -1,26 +1,21 @@
 {config, ...}: {
-  sops.secrets.cloudflare_owui_creds = {
-    key = "cloudflare_owui_creds";
-    restartUnits = ["cloudflared-tunnel-d72bf763-1f5c-4797-bc71-f589fb67ebff.service"];
-  };
-
-  sops.secrets.cloudflare_litellm_creds = {
-    key = "cloudflare_litellm_creds";
-    restartUnits = ["cloudflared-tunnel-37d497eb-3b17-46f1-9313-18131436ab2c.service"];
+  sops.secrets.services_hub_creds = {
+    key = "services_hub_creds";
+    restartUnits = ["cloudflared-tunnel-8ccf2f3e-1cbd-4861-8356-383c20bd0a1d.service"];
   };
 
   services.cloudflared = {
     enable = true;
     tunnels = {
-      "d72bf763-1f5c-4797-bc71-f589fb67ebff" = {
-        credentialsFile = config.sops.secrets.cloudflare_owui_creds.path;
+      "8ccf2f3e-1cbd-4861-8356-383c20bd0a1d" = {
+        credentialsFile = config.sops.secrets.services_hub_creds.path;
         default = "http_status:404";
-        ingress = {"ai.loscuatrogolpes.casa" = "http://localhost:8080";}; #
-      };
-      "37d497eb-3b17-46f1-9313-18131436ab2c" = {
-        credentialsFile = config.sops.secrets.cloudflare_litellm_creds.path;
-        default = "http_status:404";
-        ingress = {"ai-ollama.loscuatrogolpes.casa" = "http://localhost:4000";}; #
+        ingress = {
+          "hub.loscuatrogolpes.casa" = "http://localhost:8080";
+          "chat.loscuatrogolpes.casa" = "http://10.0.0.173:8080";
+          "api-vllm.loscuatrogolpes.casa" = "http://10.0.0.173:4000";
+          "auth.loscuatrogolpes.casa" = "http://localhost:9000";
+        };
       };
     };
   };

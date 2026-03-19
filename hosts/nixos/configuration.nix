@@ -7,7 +7,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/openweb-ui.nix
-    ../../modules/cloudflared.nix
+    ../../modules/cloudflared-ai.nix
     ../../modules/ai-services.nix
     inputs.sops-nix.nixosModules.sops
   ];
@@ -109,7 +109,12 @@
     pkgs-ai.vllm-glm
   ];
 
-  networking.firewall.enable = false;
+  networking.firewall = {
+    enable = true;
+    extraInputRules = ''
+      ip saddr 10.0.0.112 tcp dport { 4000, 8080 } accept
+    '';
+  };
 
   system.stateVersion = "24.11";
 
