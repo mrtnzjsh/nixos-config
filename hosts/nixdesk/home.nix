@@ -6,6 +6,7 @@
   imports = [
     inputs.nvf.homeManagerModules.default
     inputs.nix-doom-emacs.homeModule
+    inputs.sops-nix.homeManagerModules.sops
     ../../modules/shell.nix
     ../../modules/git.nix
     ../../modules/nvf-config.nix
@@ -40,6 +41,7 @@
     ascii-image-converter
     libreoffice
     sops
+    localsend
   ];
 
   sops = {

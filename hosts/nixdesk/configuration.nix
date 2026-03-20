@@ -3,7 +3,16 @@
   inputs,
   ...
 }: {
-  imports = [./hardware-configuration.nix];
+  imports = [
+    ./hardware-configuration.nix
+    inputs.sops-nix.nixosModules.sops
+  ];
+
+  sops = {
+    defaultSopsFile = ../../secrets/secrets.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/matatan/.config/sops/age/keys.txt";
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -62,10 +71,20 @@
       };
     };
   };
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.matatan = import ./home.nix;
+    extraSpecialArgs = {
+      inherit inputs pkgs;
+      # Add the other specific inputs your flake defines
+      nvf = inputs.nvf;
+      opencode = inputs.opencode;
+      nix-doom-emacs = inputs.nix-doom-emacs;
+    };
+
+    users.matatan = import ./home.nix;
+  };
 
   users.users.matatan = {
     isNormalUser = true;
