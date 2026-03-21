@@ -4,7 +4,6 @@
   ...
 }: {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
     inputs.nixos-hardware.nixosModules.common-cpu-intel
@@ -144,9 +143,19 @@
     shell = pkgs.zsh;
   };
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.users.matatan = import ./home.nix;
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+
+    extraSpecialArgs = {
+      inherit inputs pkgs;
+      nvf = inputs.nvf;
+      opencode = inputs.opencode;
+      nix-doom-emacs = inputs.nix-doom-emacs;
+    };
+
+    users.matatan = import ./home.nix;
+  };
 
   programs.zsh.enable = true;
   programs.nix-ld.enable = true;

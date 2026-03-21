@@ -7,10 +7,11 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/ai-services.nix
+    ../../modules/tailscale.nix
+    ../../modules/openweb-ui.nix
     inputs.sops-nix.nixosModules.sops
   ];
 
-  # Bootloader settings
   boot.loader.systemd-boot.enable = true;
   boot.loader.grub.device = "/dev/nvme0n1";
   boot.loader.grub.useOSProber = true;
@@ -89,6 +90,7 @@
     open = false;
     powerManagement.enable = false;
     nvidiaSettings = true;
+    nvidiaPersistenced = true;
   };
 
   services.openssh = {

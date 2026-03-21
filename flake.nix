@@ -36,7 +36,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    opencode.url = "github:anomalyco/opencode";
+    opencode = {
+      url = "github:anomalyco/opencode";
+      inputs.nixpkgs.follows = "nixpkgs-ai";
+    };
 
     pia = {
       url = "github:mrehanabbasi/pia.nix";
@@ -95,12 +98,16 @@
       localSystem = system;
       overlays = [
         (import ./overlays/tree-sitter.nix)
-        (import ./hosts/nixos/ai-overlays.nix)
+        (import ./overlays/ai-overlays.nix)
       ];
       config = {
         allowUnfree = true;
         allowBroken = true;
+
         cudaSupport = true;
+        cudaCapabilities = ["8.6"];
+        cudaArchList = ["8.6"];
+
         allowUnfreePredicate = pkg:
           builtins.elem (nixpkgs.lib.getName pkg) [
             "google-chrome"
@@ -141,8 +148,8 @@
     };
 
     pkgs-ai = import nixpkgs-ai {
-      localSystem = system;
-      overlays = [(import ./hosts/nixos/ai-overlays.nix)];
+      inherit system;
+      overlays = [(import ./overlays/ai-overlays.nix)];
       config = {
         allowUnfree = true;
         cudaSupport = true;
@@ -160,12 +167,6 @@
           pia.nixosModules.default
           ./hosts/nixtop/configuration.nix
           home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs opencode nvf nix-doom-emacs;
-              pkgs = pkgs-desktop;
-            };
-          }
 
           {
             nix.settings = {
@@ -184,12 +185,6 @@
           arion.nixosModules.arion
           ./hosts/nixdesk/configuration.nix
           home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = {
-              inherit inputs opencode nvf nix-doom-emacs;
-              pkgs = pkgs-desktop;
-            };
-          }
 
           {
             nix.settings = {

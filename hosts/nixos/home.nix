@@ -29,6 +29,7 @@
     fd
     zoxide
     wl-clipboard
+    fastfetch
 
     age
     sops

@@ -24,13 +24,17 @@
         "PYTORCH_ALLOC_CONF=expandable_segments:True"
         "LD_LIBRARY_PATH=/run/opengl-driver/lib:/run/opengl-driver-32/lib"
       ];
+      prestart = ''
+        ${config.boot.kernelPackages.nvidia_x11}/bin/nvidia-smi -pm 1
+        # Set a hard 300W cap per card to prevent agent loops from crashing your system
+        ${config.boot.kernelPackages.nvidia_x11}/bin/nvidia-smi -pl 300
+      '';
       ExecStart = ''
         ${pkgs-ai.vllm-glm}/bin/vllm serve QuantTrio/GLM-4.7-Flash-AWQ \
           --host 0.0.0.0 --port 8000 \
           --tensor-parallel-size 2 \
-          --max-model-len 131072 \
+          --max-model-len 65536 \
           --gpu-memory-utilization 0.90 \
-          --enforce-eager \
           --disable-custom-all-reduce \
           --trust-remote-code \
           --kv-cache-dtype auto \
@@ -74,6 +78,7 @@
               model: hosted_vllm/glm-47-flash
               api_base: "http://127.0.0.1:8000/v1"
               api_key: "e8a282eb-7b07-42a8-ba62-9e713d730405"
+              set_fastapi_middleware_cors: true
       '';
     in "${litellm-with-proxy}/bin/litellm --config ${proxyConfig} --host 0.0.0.0 --port 4000";
 

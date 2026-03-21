@@ -93,7 +93,7 @@ nix run nixpkgs#statix -- check .
 - **Modularity:** Do not bloat `configuration.nix` or `home.nix`. 
   - Host-specific hardware and boot configurations go in `hosts/<hostname>/`.
   - Shared configurations, applications, and tool setups go in `modules/` (e.g., `modules/wezterm.nix`, `modules/git.nix`).
-- **Overlays:** Place complex package overrides in `overlays/` or host-specific overlay files (`hosts/nixos/ai-overlays.nix`).
+- **Overlays:** Place complex package overrides in `overlays/` or host-specific overlay files (`overlays/ai-overlays.nix`).
 
 ### 3.4 Types and Configuration
 - **NixOS Options:** When defining new custom modules, use the standard NixOS module system (`lib.mkOption`, `lib.types.*`).

@@ -71,13 +71,13 @@
       };
     };
   };
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
 
     extraSpecialArgs = {
       inherit inputs pkgs;
-      # Add the other specific inputs your flake defines
       nvf = inputs.nvf;
       opencode = inputs.opencode;
       nix-doom-emacs = inputs.nix-doom-emacs;
