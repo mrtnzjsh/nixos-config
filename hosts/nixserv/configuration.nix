@@ -15,6 +15,7 @@
     ../../modules/nixarr.nix
     ../../modules/couchdb.nix
     ../../modules/authentik.nix
+    ../../modules/tailscale.nix
   ];
 
   # Bootloader.
