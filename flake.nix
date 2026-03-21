@@ -237,7 +237,7 @@
 
     darwinConfigurations = {
       matatan-mbp = nix-darwin.lib.darwinSystem {
-        hostPlatform = "aarch64-darwin";
+        system = "aarch64-darwin";
         specialArgs = {inherit inputs;};
 
         modules = [

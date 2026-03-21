@@ -31,6 +31,7 @@ in {
 
         # development
         new-repo = "bash -c 'cp ~/.nixos-config/templates/flake_template.nix flake.nix && echo \"use flake\" >> .envrc && direnv allow'";
+        erc = "echo \"use flake\" >> .envrc && direnv allow";
       }
       // (pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
         # These keys will ONLY exist on Linux. On macOS, they won't be defined at all.

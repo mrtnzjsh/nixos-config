@@ -119,6 +119,16 @@ in {
           enable = true;
           formatOnSave = true;
           trouble.enable = true;
+          servers.nil.appendConfig = ''
+            settings = {
+              ["nil"] = {
+                nix = {
+                  autoArchive = true,
+                  autoEvalInputs = true,
+                },
+              },
+            }
+          '';
         };
 
         luaConfigPost = ''

@@ -40,6 +40,7 @@
       "obsidian"
       "transmission"
       "vlc"
+      "tailscale"
     ];
   };
 
