@@ -56,7 +56,37 @@ in {
           };
         };
 
-        clipboard.providers.wl-copy.enable = pkgs.stdenv.isLinux;
+        # Better clipboard handling:
+        # OSC 52 is the "gold standard" for headless/SSH.
+        # Neovim 0.10+ supports it natively.
+        luaConfigPost = ''
+          -- Force the legacy Treesitter engine to register the indent module
+          local ok, configs = pcall(require, "nvim-treesitter.configs")
+          if ok then
+            configs.setup({
+              indent = {
+                enable = true,
+              }
+            })
+          end
+
+          -- OSC 52 fallback for headless/SSH
+          -- We only use OSC 52 for copying to avoid the "waiting for OSC 52 response" hang on paste.
+          -- For pasting, we fall back to internal registers. Use terminal paste for external content.
+          if os.getenv('SSH_TTY') or (not os.getenv('WAYLAND_DISPLAY') and not os.getenv('DISPLAY')) then
+            vim.g.clipboard = {
+              name = 'OSC 52 (Copy only)',
+              copy = {
+                ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+                ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+              },
+              paste = {
+                ['+'] = function() return {vim.fn.split(vim.fn.getreg('"'), '\n', 1), vim.fn.getregtype('"')} end,
+                ['*'] = function() return {vim.fn.split(vim.fn.getreg('"'), '\n', 1), vim.fn.getregtype('"')} end,
+              },
+            }
+          end
+        '';
 
         extraPackages = with pkgs; [
           (
@@ -130,18 +160,6 @@ in {
             }
           '';
         };
-
-        luaConfigPost = ''
-          -- Force the legacy Treesitter engine to register the indent module
-          local ok, configs = pcall(require, "nvim-treesitter.configs")
-          if ok then
-            configs.setup({
-              indent = {
-                enable = true,
-              }
-            })
-          end
-        '';
 
         options = {
           autoindent = true;

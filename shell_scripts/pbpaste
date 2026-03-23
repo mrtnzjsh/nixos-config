@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Intelligent clipboard paste: macOS → Wayland → X11 → Tmux → OSC 52 (get is hard)
+if [[ "$OSTYPE" == "darwin"* ]] && command -v pbpaste >/dev/null 2>&1; then
+  pbpaste
+elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-paste >/dev/null 2>&1; then
+  wl-paste
+elif [ -n "$DISPLAY" ] && command -v xclip >/dev/null 2>&1; then
+  xclip -selection clipboard -o
+elif [ -n "$TMUX" ]; then
+  # Fall back to tmux buffer if available
+  tmux save-buffer - 2>/dev/null
+else
+  # OSC 52 "get" is non-trivial for a script and requires terminal interaction.
+  # We return nothing here to avoid the hang on `base64 -d`.
+  exit 0
+fi

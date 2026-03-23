@@ -15,6 +15,7 @@
           "chat.loscuatrogolpes.casa" = "http://10.0.0.173:8080";
           "api-vllm.loscuatrogolpes.casa" = "http://10.0.0.173:4000";
           "auth.loscuatrogolpes.casa" = "http://localhost:9000";
+          "ha.loscuatrogolpes.casa" = "http://10.0.0.207:8123";
         };
       };
     };

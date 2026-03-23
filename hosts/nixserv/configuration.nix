@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   inputs,
   pkgs,
@@ -16,6 +13,8 @@
     ../../modules/couchdb.nix
     ../../modules/authentik.nix
     ../../modules/tailscale.nix
+    ../../modules/virtualisation.nix
+    ../../modules/zfs.nix
   ];
 
   # Bootloader.
@@ -25,21 +24,15 @@
   boot.kernelPackages = pkgs.linuxPackages;
   boot.supportedFilesystems = ["zfs"];
 
-  boot.zfs.extraPools = ["Sancocho"];
-
-  networking.hostName = "nixserv"; # Define your hostname.
+  networking.hostName = "nixserv";
   networking.hostId = "ca49bafa";
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
   nix.settings = {
     # Fixes the "download buffer is full" warning
     download-buffer-size = 134217728; # 128MB (Double the default)
 
     experimental-features = ["nix-command" "flakes"];
   };
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -68,11 +61,10 @@
     variant = "";
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.matatan = {
     isNormalUser = true;
     description = "matatan";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = ["networkmanager" "wheel" "libvirtd" "kvm"];
     packages = with pkgs; [tree];
     shell = pkgs.zsh;
     home = "/home/matatan";
@@ -132,33 +124,44 @@
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     mdadm
     zfs
     wireguard-tools
     inputs.pia.packages.${pkgs.system}.default
+    xclip
   ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
+  # Open ports in the firewall.
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [80 443 8123 9000 9090];
+    trustedInterfaces = ["tailscale0"];
+  };
+  networking.bridges = {};
+  networking.interfaces = {
+    enp2s0f1.useDHCP = false;
+    enp2s0f0.useDHCP = true;
+    eno2.useDHCP = false;
+  };
+  # networking.firewall.allowedUDPPorts = [ ... ];
+
+  # networking = {
+  #   bridges."br0".interfaces = ["enp2s0f0"];
+  #
+  #   interfaces."br0" = {
+  #     useDHCP = true;
+  #   };
+  #
+  #   interfaces."enp2s0f0".useDHCP = false;
   # };
 
-  # List services that you want to enable:
-
-  # Open ports in the firewall.
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [80 443 9000];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  # boot.kernel.sysctl = {
+  #   "net.bridge.bridge-nf-call-iptables" = 0;
+  #   "net.bridge.bridge-nf-call-arptables" = 0;
+  #   "net.bridge.bridge-nf-call-ip6tables" = 0;
+  # };
 
   # Fixes the "Too many open files" error system-wide
   security.pam.loginLimits = [
@@ -176,11 +179,5 @@
     }
   ];
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "25.11";
 }

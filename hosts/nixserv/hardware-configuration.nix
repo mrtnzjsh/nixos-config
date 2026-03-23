@@ -4,7 +4,6 @@
 {
   config,
   lib,
-  pkgs,
   modulesPath,
   ...
 }: {
@@ -26,6 +25,11 @@
     device = "/dev/disk/by-uuid/F107-D733";
     fsType = "vfat";
     options = ["fmask=0077" "dmask=0077"];
+  };
+
+  fileSystems."/mnt/vms" = {
+    device = "/dev/disk/by-uuid/785fcd40-6eb2-4f5d-988d-22dbf01f285e";
+    fsType = "ext4";
   };
 
   swapDevices = [

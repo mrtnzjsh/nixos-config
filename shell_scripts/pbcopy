@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Intelligent clipboard copy: macOS → Wayland → X11 → OSC 52 (headless)
+if [[ "$OSTYPE" == "darwin"* ]] && command -v pbcopy >/dev/null 2>&1; then
+  pbcopy
+elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null 2>&1; then
+  wl-copy
+elif [ -n "$DISPLAY" ] && command -v xclip >/dev/null 2>&1; then
+  xclip -selection clipboard
+else
+  # Headless/SSH fallback using OSC 52
+  # We read from stdin, base64 encode it, and send the escape sequence to the terminal.
+  encoded=$(base64 | tr -d '\n')
+  if [ -n "$TMUX" ]; then
+    # Tmux pass-through: ESC P tmux ; <sequence> ESC \
+    # The sequence itself must have escaped ESC if it contains them, 
+    # but here we just need to wrap the OSC 52.
+    printf "\033Ptmux;\033]52;c;%s\a\033\\" "$encoded"
+  else
+    printf "\033]52;c;%s\a" "$encoded"
+  fi
+fi
