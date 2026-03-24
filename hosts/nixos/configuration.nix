@@ -6,8 +6,6 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/openweb-ui.nix
-    ../../modules/cloudflared-ai.nix
     ../../modules/ai-services.nix
     inputs.sops-nix.nixosModules.sops
   ];
@@ -26,7 +24,7 @@
 
   users.users.matatan = {
     isNormalUser = true;
-    extraGroups = ["wheel"];
+    extraGroups = ["wheel" "video" "render"];
     packages = with pkgs; [tree];
     shell = pkgs.zsh;
     home = "/home/matatan";
@@ -111,9 +109,7 @@
 
   networking.firewall = {
     enable = true;
-    extraInputRules = ''
-      ip saddr 10.0.0.112 tcp dport { 4000, 8080 } accept
-    '';
+    allowedTCPPorts = [4000 8000 8080];
   };
 
   system.stateVersion = "24.11";

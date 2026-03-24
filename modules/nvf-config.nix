@@ -31,6 +31,59 @@ in {
           }
         ];
 
+        assistant = {
+          codecompanion-nvim = {
+            enable = true;
+            setupOpts = {
+              strategies = {
+                chat = {
+                  adapter = "opencode";
+                };
+                inline = {
+                  adapter = "opencode";
+                };
+                agent = {
+                  adapter = "opencode";
+                };
+              };
+              adapters = lib.generators.mkLuaInline "
+                {
+                  opencode = function()
+                    return require('codecompanion.adapters').extend('opencode', {
+                      opts = {
+                        args = { 'acp' }
+                      }
+                    })
+                  end,
+                  gemini = function()
+                    return require('codecompanion.adapters').extend('gemini', {
+                      opts = {
+                        args = { '--experimental-acp' }
+                      }
+                    })
+                  end,
+                }
+              ";
+            };
+          };
+          avante-nvim = {
+            enable = true;
+            setupOpts = {
+              provider = "opencode";
+              acp_providers = {
+                opencode = {
+                  command = "opencode";
+                  args = ["acp"];
+                };
+                gemini = {
+                  command = "gemini";
+                  args = ["--experimental-acp"];
+                };
+              };
+            };
+          };
+        };
+
         autocomplete = {
           blink-cmp = {
             enable = true;
@@ -44,6 +97,8 @@ in {
           whichKey = {
             enable = true;
             register = {
+              "<leader>a" = "+AI/Assistant (Avante)";
+              "<leader>c" = "+CodeCompanion";
               "<leader>d" = "+delete";
               "<leader>e" = "+Pickers/Explorer";
               "<leader>f" = "+find";
@@ -70,6 +125,13 @@ in {
             })
           end
 
+          -- AI keymaps (ACP-based)
+          vim.keymap.set({ "n", "v" }, "<C-a>", "<cmd>CodeCompanionActions<cr>", { desc = "AI Actions" })
+          vim.keymap.set({ "n", "v" }, "<C-x>", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "AI Chat" })
+          vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { desc = "Add to Chat" })
+          vim.keymap.set("n", "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", { desc = "Companion Chat" })
+          vim.keymap.set("n", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { desc = "Companion Actions" })
+
           -- OSC 52 fallback for headless/SSH
           -- We only use OSC 52 for copying to avoid the "waiting for OSC 52 response" hang on paste.
           -- For pasting, we fall back to internal registers. Use terminal paste for external content.
@@ -86,6 +148,7 @@ in {
               },
             }
           end
+
         '';
 
         extraPackages = with pkgs; [
@@ -100,27 +163,7 @@ in {
           lazygit
         ];
 
-        extraPlugins = {
-          opencode-nvim = {
-            package = pkgs.vimPlugins.opencode-nvim;
-            setup = ''
-              vim.g.opencode_opts = {}
-              vim.o.autoread = true -- Required for `opts.events.reload`
-              vim.keymap.set({ "n", "x" }, "<C-a>", function() require("opencode").ask("@this: ", { submit = true }) end, { desc = "Ask opencode…" })
-              vim.keymap.set({ "n", "x" }, "<C-x>", function() require("opencode").select() end, { desc = "Execute opencode action…" })
-              vim.keymap.set({ "n", "t" }, "<C-.>", function() require("opencode").toggle() end, { desc = "Toggle opencode" })
-              vim.keymap.set({ "n", "x" }, "go", function() return require("opencode").operator("@this ") end, { desc = "Add range to opencode", expr = true })
-              vim.keymap.set("n", "goo", function() return require("opencode").operator("@this ") .. "_" end, { desc = "Add line to opencode", expr = true })
-              vim.keymap.set("n", "<S-C-u>", function() require("opencode").command("session.half.page.up") end, { desc = "Scroll opencode up" })
-              vim.keymap.set("n", "<S-C-d>", function() require("opencode").command("session.half.page.down") end, { desc = "Scroll opencode down" })
-
-              -- Alternative increment/decrement since opencode uses <C-a> and <C-x>
-              vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
-              vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
-            '';
-            after = ["snacks-nvim"];
-          };
-        };
+        extraPlugins = {};
 
         languages = {
           enableFormat = true;

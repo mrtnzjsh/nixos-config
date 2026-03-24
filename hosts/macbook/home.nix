@@ -12,6 +12,7 @@
     ../../modules/git.nix
     ../../modules/nvf-config.nix
     ../../modules/wezterm.nix
+    ../../modules/tmux.nix
     ../../modules/opencode.nix
   ];
 

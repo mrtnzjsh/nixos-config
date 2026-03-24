@@ -10,6 +10,7 @@
     ../../modules/shell.nix
     ../../modules/git.nix
     ../../modules/nvf-config.nix
+    ../../modules/tmux.nix
     ../../modules/opencode.nix
   ];
 

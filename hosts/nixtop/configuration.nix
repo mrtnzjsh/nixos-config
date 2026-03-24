@@ -11,7 +11,10 @@
     inputs.nixos-hardware.nixosModules.common-pc-laptop
     inputs.nixos-hardware.nixosModules.common-pc-laptop-ssd
     ../../modules/pia.nix
+    ../../modules/tailscale.nix
   ];
+
+  isServer = false;
 
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
@@ -42,7 +45,7 @@
     ${pkgs.iw}/bin/iw reg set US
     # Set the Transmit Power limit to 10 dBm (1000 mBm)
     # Lowering further from previous (ineffective) 15 dBm to reduce power contention.
-    ${pkgs.iw}/bin/iw dev wlp9s0f0 set txpower limit 50
+    ${pkgs.iw}/bin/iw dev wlp9s0f0 set txpower limit 30
   '';
 
   # Intel Graphics fix (often needed alongside the WiFi fix)
@@ -64,6 +67,7 @@
   networking.wireless.enable = true;
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.registry.nixpkgs.flake = inputs.nixpkgs;
 
   networking.networkmanager.enable = true;
   networking.networkmanager.settings = {

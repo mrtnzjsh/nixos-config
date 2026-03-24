@@ -10,7 +10,7 @@
     after = ["network.target"];
 
     # This explicitly adds the lscpu binary to the service environment
-    path = with pkgs; [util-linux pciutils coreutils cudaPackages.nccl pkgs-ai.vllm-glm];
+    path = with pkgs; [util-linux pciutils coreutils pkgs-ai.cudaPackages.nccl pkgs-ai.vllm-glm];
 
     serviceConfig = {
       EnvironmentFile = config.sops.secrets.HF_TOKEN.path;
@@ -18,10 +18,11 @@
         "VLLM_USE_V1=0"
         "CUDA_VISIBLE_DEVICES=0,1"
         "CUDA_DEVICE_ORDER=PCI_BUS_ID"
-        "VLLM_NCCL_SO_PATH=${pkgs.cudaPackages.nccl}/lib/libnccl.so.2"
+        "VLLM_NCCL_SO_PATH=${pkgs-ai.cudaPackages.nccl}/lib/libnccl.so.2"
         "VLLM_LOGGING_LEVEL=INFO"
         "VLLM_DEBUG_LOG_API_SERVER_REQUEST=1"
         "PYTORCH_ALLOC_CONF=expandable_segments:True"
+        "LD_LIBRARY_PATH=/run/opengl-driver/lib:/run/opengl-driver-32/lib"
       ];
       ExecStart = ''
         ${pkgs-ai.vllm-glm}/bin/vllm serve QuantTrio/GLM-4.7-Flash-AWQ \
@@ -74,7 +75,7 @@
               api_base: "http://127.0.0.1:8000/v1"
               api_key: "e8a282eb-7b07-42a8-ba62-9e713d730405"
       '';
-    in "${litellm-with-proxy}/bin/litellm --config ${proxyConfig} --port 4000";
+    in "${litellm-with-proxy}/bin/litellm --config ${proxyConfig} --host 0.0.0.0 --port 4000";
 
     serviceConfig = {
       Restart = "always";

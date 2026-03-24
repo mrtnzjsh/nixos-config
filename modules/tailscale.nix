@@ -2,9 +2,23 @@
   config,
   pkgs,
   ...
-}: {
-  sops.secrets.tailscale_key = {
-    key = "tailscale_key";
+}: let
+  tailscaleArgs =
+    if config.isServer
+    then "--advertise-tags=tag:server --advertise-exit-node"
+    else "--advertise-tags=tag:user-machine --advertise-exit-node=false";
+
+  tailscale_secret =
+    if config.isServer
+    then config.sops.secrets.tailscale_server_key.path
+    else config.sops.secrets.tailscale_user_machine_key.path;
+in {
+  sops.secrets.tailscale_server_key = {
+    key = "tailscale_server_key";
+  };
+
+  sops.secrets.tailscale_user_machine_key = {
+    key = "tailscale_user_machine_key";
   };
 
   services.tailscale = {
@@ -19,9 +33,7 @@
     wantedBy = ["multi-user.target"];
     serviceConfig.Type = "oneshot";
     script = ''
-      ${pkgs.tailscale}/bin/tailscale up --authkey $(cat ${config.sops.secrets.tailscale_key.path}) \
-      --advertise-tags=tag:server \
-      --advertise-exit-node
+      ${pkgs.tailscale}/bin/tailscale up --authkey $(cat ${tailscale_secret}) ${tailscaleArgs}
     '';
   };
 

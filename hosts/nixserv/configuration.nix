@@ -27,6 +27,8 @@
   networking.hostName = "nixserv";
   networking.hostId = "ca49bafa";
 
+  isServer = true;
+
   nix.settings = {
     # Fixes the "download buffer is full" warning
     download-buffer-size = 134217728; # 128MB (Double the default)

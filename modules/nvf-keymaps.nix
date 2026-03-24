@@ -30,6 +30,43 @@
       silent = true;
     }
 
+    # Terminal Navigation and Escape
+    {
+      action = "<C-\\><C-n><C-w>h";
+      key = "<C-h>";
+      mode = "t";
+      noremap = true;
+      silent = true;
+    }
+    {
+      action = "<C-\\><C-n><C-w>j";
+      key = "<C-j>";
+      mode = "t";
+      noremap = true;
+      silent = true;
+    }
+    {
+      action = "<C-\\><C-n><C-w>k";
+      key = "<C-k>";
+      mode = "t";
+      noremap = true;
+      silent = true;
+    }
+    {
+      action = "<C-\\><C-n><C-w>l";
+      key = "<C-l>";
+      mode = "t";
+      noremap = true;
+      silent = true;
+    }
+    {
+      action = "<C-\\><C-n>";
+      key = "<Esc>";
+      mode = "t";
+      noremap = true;
+      silent = true;
+    }
+
     # Remove highlights
     {
       action = ":nohl<CR>";

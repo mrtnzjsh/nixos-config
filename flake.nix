@@ -149,6 +149,7 @@
 
         modules = [
           {nixpkgs.pkgs = pkgs-desktop;}
+          ./modules/commons.nix
           pia.nixosModules.default
           ./hosts/nixtop/configuration.nix
           home-manager.nixosModules.home-manager
@@ -172,6 +173,7 @@
 
         modules = [
           {nixpkgs.pkgs = pkgs-desktop;}
+          ./modules/commons.nix
           ./hosts/nixdesk/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -193,6 +195,7 @@
         specialArgs = {inherit inputs pkgs-ai;};
         modules = [
           {nixpkgs.pkgs = pkgs-nixos;}
+          ./modules/commons.nix
           ./hosts/nixos/configuration.nix
           home-manager.nixosModules.home-manager
 
@@ -221,6 +224,7 @@
 
         modules = [
           {nixpkgs.pkgs = pkgs-nixserv;}
+          ./modules/commons.nix
           ./hosts/nixserv/configuration.nix
           nixarr.nixosModules.default
           authentik-nix.nixosModules.default

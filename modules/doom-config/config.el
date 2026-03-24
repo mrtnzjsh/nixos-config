@@ -36,7 +36,7 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type 'relative)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -71,5 +71,58 @@
 ;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
 ;; etc).
 ;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+;; You can also try \'gd\' (or \'C-c c d\') to jump to their definition and see how
 ;; they are implemented.
+
+;; Auto-scan ~/Developer for projects
+(defun doom-scan-developer-projects ()
+  "Scan ~/Developer for projects at one level depth."
+  (let* ((developer-dir (expand-file-name "~/Developer"))
+         (projects-found '()))
+    
+    ;; Scan one level deep for project markers
+    (mapc (lambda (dir)
+            (when (file-directory-p dir)
+              (push (file-name-nondirectory dir) projects-found)))
+          (directory-files-recursively developer-dir "." nil nil 1))
+    
+    ;; Separate by type (git first, then others)
+    (let ((git-projects '())
+          (other-projects '()))
+      
+      (dolist (project-name projects-found)
+        (let* ((project-path (concat developer-dir "/" project-name))
+               (is-git (ignore-errors (git-command nil nil (concat project-path "/.git")))))
+          (if is-git
+              (push project-name git-projects)
+            (push project-name other-projects))))
+      
+      ;; Prioritize git repos
+      (dolist (project-name (reverse git-projects))
+        (add-to-list 'project-roots developer-dir t))
+      
+      (dolist (project-name other-projects)
+        (add-to-list 'project-roots developer-dir t))
+      
+      ;; Log results
+      (message "Found %d project(s) in ~/Developer"
+               (length projects-found))
+      (when git-projects
+        (message "Git repos: %s" 
+                 (string-join (mapcar #'(lambda (p) (concat "[" p "]")) git-projects) " ")))
+      (when other-projects
+        (message "Other projects: %s"
+                 (string-join (mapcar #'(lambda (p) (concat "[" p "]")) other-projects) " ")))))
+
+;; Run on startup
+(add-hook 'after-init-hook #'doom-scan-developer-projects)
+
+;; Configure Projectile keybindings
+(after! projectile
+  (map! :leader
+    "p" :ignore nil
+    "p p" #'projectile-switch-project
+    "p f" #'projectile-find-file
+    "p s" #'projectile-search
+    "p b" #'projectile-switch-to-buffer
+    "p r" #'projectile-recentf))
