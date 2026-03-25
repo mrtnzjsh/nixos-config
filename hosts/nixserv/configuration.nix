@@ -15,6 +15,7 @@
     ../../modules/tailscale.nix
     ../../modules/virtualisation.nix
     ../../modules/zfs.nix
+    ../../modules/navidrome.nix
   ];
 
   # Bootloader.
@@ -63,10 +64,14 @@
     variant = "";
   };
 
+  users.groups = {
+    media = {};
+  };
+
   users.users.matatan = {
     isNormalUser = true;
     description = "matatan";
-    extraGroups = ["networkmanager" "wheel" "libvirtd" "kvm"];
+    extraGroups = ["networkmanager" "wheel" "libvirtd" "kvm" "media"];
     packages = with pkgs; [tree];
     shell = pkgs.zsh;
     home = "/home/matatan";
@@ -138,7 +143,7 @@
   # Open ports in the firewall.
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [80 443 8123 9000 9090];
+    allowedTCPPorts = [80 443 4533 8123 9000 9090 9091];
     trustedInterfaces = ["tailscale0"];
   };
   networking.bridges = {};
@@ -148,22 +153,6 @@
     eno2.useDHCP = false;
   };
   # networking.firewall.allowedUDPPorts = [ ... ];
-
-  # networking = {
-  #   bridges."br0".interfaces = ["enp2s0f0"];
-  #
-  #   interfaces."br0" = {
-  #     useDHCP = true;
-  #   };
-  #
-  #   interfaces."enp2s0f0".useDHCP = false;
-  # };
-
-  # boot.kernel.sysctl = {
-  #   "net.bridge.bridge-nf-call-iptables" = 0;
-  #   "net.bridge.bridge-nf-call-arptables" = 0;
-  #   "net.bridge.bridge-nf-call-ip6tables" = 0;
-  # };
 
   # Fixes the "Too many open files" error system-wide
   security.pam.loginLimits = [

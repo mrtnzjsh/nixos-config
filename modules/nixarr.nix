@@ -17,10 +17,5 @@
       enable = true;
       openFirewall = true;
     };
-
-    transmission = {
-      enable = true;
-      vpn.enable = true;
-    };
   };
 }
