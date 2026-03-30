@@ -110,7 +110,8 @@
     alsa-utils
     pulseaudio
 
-    inputs.helium.packages.${pkgs.system}.helium
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    inputs.arion.packages.${pkgs.stdenv.hostPlatform.system}.arion
     steam
   ];
 

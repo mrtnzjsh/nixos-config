@@ -28,11 +28,19 @@ in {
 
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
-    after = ["network-pre.target" "tailscale.service"];
-    wants = ["network-pre.target" "tailscale.service"];
+    after = ["network-online.target" "tailscale.service"];
+    wants = ["network-online.target" "tailscale.service"];
     wantedBy = ["multi-user.target"];
-    serviceConfig.Type = "oneshot";
+    serviceConfig = {
+      Type = "oneshot";
+      Restart = "on-failure";
+      RestartSec = "10s";
+    };
     script = ''
+      # Wait for tailscaled to be ready
+      until ${pkgs.tailscale}/bin/tailscale status --json >/dev/null 2>&1; do
+        sleep 1
+      done
       ${pkgs.tailscale}/bin/tailscale up --authkey $(cat ${tailscale_secret}) ${tailscaleArgs}
     '';
   };

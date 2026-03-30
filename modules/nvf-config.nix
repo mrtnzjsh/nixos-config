@@ -111,6 +111,11 @@ in {
           };
         };
 
+        debugger.nvim-dap = {
+          enable = true;
+          ui.enable = true;
+        };
+
         # Better clipboard handling:
         # OSC 52 is the "gold standard" for headless/SSH.
         # Neovim 0.10+ supports it natively.
@@ -163,16 +168,57 @@ in {
           lazygit
         ];
 
-        extraPlugins = {};
+        extraPlugins = with pkgs.vimPlugins; {
+          neotest = {
+            package = neotest;
+          };
+
+          neotest-python = {package = neotest-python;};
+          neotest-rust = {package = neotest-rust;};
+          neotest-jest = {package = neotest-jest;};
+          neotest-java = {package = neotest-java;};
+          nvim-nio = {package = nvim-nio;};
+          fixcursorhold-nvim = {package = FixCursorHold-nvim;};
+        };
+
+        luaConfigRC.neotest-config = ''
+          require("neotest").setup({
+            adapters = {
+              require("neotest-python")({
+                dap = { adapter = "python" },
+              }),
+              require("neotest-rust"),
+              require("neotest-jest")({
+                jestCommand = "npm test --",
+                jest_test_discovery = true,
+              }),
+              require("neotest-java"),
+            },
+          })
+
+          -- Add keybinds for testing
+          vim.keymap.set('n', '<leader>tn', function() require('neotest').run.run() end, { desc = 'Run Nearest Test' })
+          vim.keymap.set('n', '<leader>tf', function() require('neotest').run.run(vim.fn.expand('%')) end, { desc = 'Run File' })
+          vim.keymap.set('n', '<leader>ts', function() require('neotest').summary.toggle() end, { desc = 'Toggle Test Summary' })
+        '';
 
         languages = {
           enableFormat = true;
           enableTreesitter = true;
           json.enable = true;
           java.enable = true;
-          rust.enable = true;
           ts.enable = true;
           yaml.enable = true;
+
+          python = {
+            enable = true;
+            dap.enable = true;
+          };
+
+          rust = {
+            enable = true;
+            dap.enable = true;
+          };
 
           markdown = {
             enable = true;

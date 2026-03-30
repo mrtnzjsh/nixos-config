@@ -139,7 +139,7 @@
   users.users.matatan = {
     isNormalUser = true;
     description = "matatan";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = ["networkmanager" "wheel" "podman" "docker"];
     packages = [];
     shell = pkgs.zsh;
   };
@@ -156,7 +156,8 @@
   environment.systemPackages = with pkgs; [
     wget
     vim
-    inputs.helium.packages.${system}.helium
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
+    inputs.arion.packages.${pkgs.stdenv.hostPlatform.system}.arion
   ];
 
   fonts.packages = with pkgs; [
@@ -166,6 +167,19 @@
   ];
 
   services.openssh.enable = true;
+
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
+
+    docker = {
+      enable = true;
+      enableOnBoot = true;
+    };
+  };
 
   system.stateVersion = "25.11";
 }

@@ -136,7 +136,7 @@
     mdadm
     zfs
     wireguard-tools
-    inputs.pia.packages.${pkgs.system}.default
+    inputs.pia.packages.${pkgs.stdenv.hostPlatform.system}.default
     xclip
   ];
 

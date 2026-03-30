@@ -26,6 +26,11 @@
     };
 
     nix-doom-emacs.url = "github:marienz/nix-doom-emacs-unstraightened";
+    arion = {
+      url = "github:hercules-ci/arion";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nvf = {
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,6 +65,7 @@
     opencode,
     sops-nix,
     pia,
+    arion,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -150,6 +156,7 @@
         modules = [
           {nixpkgs.pkgs = pkgs-desktop;}
           ./modules/commons.nix
+          arion.nixosModules.arion
           pia.nixosModules.default
           ./hosts/nixtop/configuration.nix
           home-manager.nixosModules.home-manager
@@ -174,6 +181,7 @@
         modules = [
           {nixpkgs.pkgs = pkgs-desktop;}
           ./modules/commons.nix
+          arion.nixosModules.arion
           ./hosts/nixdesk/configuration.nix
           home-manager.nixosModules.home-manager
           {
