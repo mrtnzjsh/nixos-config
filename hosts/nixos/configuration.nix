@@ -7,6 +7,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/ai-services.nix
+    ../../modules/gpu-tuning.nix
     ../../modules/tailscale.nix
     ../../modules/openweb-ui.nix
     inputs.sops-nix.nixosModules.sops
@@ -87,8 +88,8 @@
   hardware.graphics.enable = true;
   hardware.nvidia = {
     modesetting.enable = true;
-    open = false;
-    powerManagement.enable = false;
+    open = true;
+    powerManagement.enable = true;
     nvidiaSettings = true;
     nvidiaPersistenced = true;
   };

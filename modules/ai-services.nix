@@ -24,11 +24,6 @@
         "PYTORCH_ALLOC_CONF=expandable_segments:True"
         "LD_LIBRARY_PATH=/run/opengl-driver/lib:/run/opengl-driver-32/lib"
       ];
-      prestart = ''
-        ${config.boot.kernelPackages.nvidia_x11}/bin/nvidia-smi -pm 1
-        # Set a hard 300W cap per card to prevent agent loops from crashing your system
-        ${config.boot.kernelPackages.nvidia_x11}/bin/nvidia-smi -pl 300
-      '';
       ExecStart = ''
         ${pkgs-ai.vllm-glm}/bin/vllm serve QuantTrio/GLM-4.7-Flash-AWQ \
           --host 0.0.0.0 --port 8000 \
