@@ -80,6 +80,9 @@
   programs.opencode = {
     enable = true;
     package = inputs.opencode.packages.${pkgs.system}.default.overrideAttrs (oldAttrs: {
+      node_modules = oldAttrs.node_modules.overrideAttrs (_: {
+        outputHash = "sha256-pbVW7cOLT76Q7f++xaYYrwuN7eS6FRen80xoaVog3M4=";
+      });
       postPatch =
         (oldAttrs.postPatch or "")
         + ''
