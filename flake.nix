@@ -50,6 +50,9 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-snapd.url = "github:nix-community/nix-snapd";
+    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -69,6 +72,7 @@
     sops-nix,
     pia,
     arion,
+    nix-snapd,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -76,7 +80,19 @@
     # Pkgs for standard desktop hosts
     pkgs-desktop = import nixpkgs {
       localSystem = system;
-      overlays = [(import ./overlays/tree-sitter.nix)];
+      overlays = [
+        (import ./overlays/tree-sitter.nix)
+        (final: prev: {
+          gemini-desktop = final.appimageTools.wrapType2 {
+            pname = "gemini-desktop";
+            version = "0.11.1";
+            src = final.fetchurl {
+              url = "https://github.com/bwendell/gemini-desktop/releases/download/v0.11.1/Gemini-Desktop-0.11.1-x86_64.AppImage";
+              hash = "sha256-WkgsF8eHTVv4ihRWXLeFzw/W/dvX/S03ruaMo+o6tyM=";
+            };
+          };
+        })
+      ];
       config = {
         allowUnfreePredicate = pkg:
           builtins.elem (nixpkgs.lib.getName pkg) [
@@ -89,6 +105,7 @@
             "nvidia-settings"
             "1password"
             "obsidian"
+            "gemini-desktop"
           ];
       };
     };
@@ -166,6 +183,7 @@
           arion.nixosModules.arion
           pia.nixosModules.default
           ./hosts/nixtop/configuration.nix
+          nix-snapd.nixosModules.default
           home-manager.nixosModules.home-manager
 
           {

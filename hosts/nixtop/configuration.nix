@@ -23,6 +23,7 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Limit WiFi Power for screen flicker
@@ -59,6 +60,7 @@
     "i915.enable_guc=3"
     "i915.modeset=1"
     "i915.force_probe=*" # Force i915 to claim the GPU instead of 'xe'
+    "xe.enable_psr=0"
     "intel_idle.max_cstate=4"
   ];
 
@@ -108,6 +110,7 @@
   services.thermald.enable = true;
   services.upower.enable = true;
   services.hardware.bolt.enable = true;
+  services.fwupd.enable = true;
 
   # Fingerprint
   services.fprintd.enable = true;
@@ -159,6 +162,10 @@
 
   programs.zsh.enable = true;
   programs.nix-ld.enable = true;
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
 
   environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = 1;
   environment.shells = [pkgs.zsh];
@@ -189,6 +196,8 @@
       enableOnBoot = true;
     };
   };
+
+  services.snap.enable = true;
 
   system.stateVersion = "25.11";
 }

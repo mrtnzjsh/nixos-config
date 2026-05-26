@@ -21,6 +21,7 @@
   home.packages = with pkgs; [
     # ai
     gemini-cli
+    gemini-desktop
     obsidian
 
     # shell
@@ -46,6 +47,7 @@
     sops
 
     localsend
+    vlc
   ];
 
   sops = {
